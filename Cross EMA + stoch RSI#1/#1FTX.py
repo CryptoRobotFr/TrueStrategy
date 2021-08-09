@@ -5,7 +5,7 @@ import time
 import json
 from math import *
 
-accountName = 'Ytb-Tester'
+accountName = ''
 pairSymbol = 'ETH/USD'
 fiatSymbol = 'USD'
 cryptoSymbol = 'ETH'
@@ -26,7 +26,7 @@ df = pd.DataFrame(data)
 df['EMA28']=ta.trend.ema_indicator(df['close'], 28)
 df['EMA48']=ta.trend.ema_indicator(df['close'], 48)
 df['STOCH_RSI']=ta.momentum.stochrsi(df['close'])
-print(df)
+#print(df)
 
 def getBalance(myclient, coin):
     jsonBalance = myclient.get_balances()
@@ -42,7 +42,7 @@ def truncate(n, decimals=0):
 actualPrice = df['close'].iloc[-1]
 fiatAmount = getBalance(client, fiatSymbol)
 cryptoAmount = getBalance(client, cryptoSymbol)
-print(actualPrice, fiatAmount, cryptoAmount)
+print('coin price :',actualPrice, 'usd balance', fiatAmount, 'coin balance :',cryptoAmount)
 
 if float(fiatAmount) > 5 and df['EMA28'].iloc[-2] > df['EMA48'].iloc[-2] and df['STOCH_RSI'].iloc[-2] < 0.8:
     quantityBuy = truncate(float(fiatAmount)/actualPrice, myTruncate)
@@ -54,7 +54,7 @@ if float(fiatAmount) > 5 and df['EMA28'].iloc[-2] > df['EMA48'].iloc[-2] and df[
         type='market')
     print(buyOrder)
 
-if float(cryptoAmount) > 0.001 and df['EMA28'].iloc[-2] < df['EMA48'].iloc[-2] and df['STOCH_RSI'].iloc[-2] > 0.2:
+elif float(cryptoAmount) > 0.001 and df['EMA28'].iloc[-2] < df['EMA48'].iloc[-2] and df['STOCH_RSI'].iloc[-2] > 0.2:
     buyOrder = client.place_order(
         market=pairSymbol, 
         side="sell", 
@@ -62,3 +62,5 @@ if float(cryptoAmount) > 0.001 and df['EMA28'].iloc[-2] < df['EMA48'].iloc[-2] a
         size=truncate(cryptoAmount, myTruncate), 
         type='market')
     print(buyOrder)
+else :
+  print("No opportunity to take")
