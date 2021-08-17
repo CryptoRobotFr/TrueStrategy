@@ -39,29 +39,35 @@ def truncate(n, decimals=0):
     r = floor(float(n)*10**decimals)/10**decimals
     return str(r)
     
-
-actualPrice = df['close'].iloc[-1]
 fiatAmount = getBalance(client, fiatSymbol)
 cryptoAmount = getBalance(client, cryptoSymbol)
+actualPrice = df['close'].iloc[-1]
+minToken = 5/actualPrice
 print('coin price :',actualPrice, 'usd balance', fiatAmount, 'coin balance :',cryptoAmount)
 
-if float(fiatAmount) > 5 and df['EMA28'].iloc[-2] > df['EMA48'].iloc[-2] and df['STOCH_RSI'].iloc[-2] < 0.8:
-    quantityBuy = truncate(float(fiatAmount)/actualPrice, myTruncate)
-    buyOrder = client.place_order(
-        market=pairSymbol, 
-        side="buy", 
-        price=None, 
-        size=quantityBuy, 
-        type='market')
-    print(buyOrder)
+if df['EMA28'].iloc[-2] > df['EMA48'].iloc[-2] and df['STOCH_RSI'].iloc[-2] < 0.8:
+    if float(fiatAmount) > 5:
+        quantityBuy = truncate(float(fiatAmount)/actualPrice, myTruncate)
+        buyOrder = client.place_order(
+            market=pairSymbol, 
+            side="buy", 
+            price=None, 
+            size=quantityBuy, 
+            type='market')
+        print("BUY", buyOrder)
+    else:
+        print("If you  give me more USD I will buy more",cryptoSymbol)
 
-elif float(cryptoAmount) > 0.001 and df['EMA28'].iloc[-2] < df['EMA48'].iloc[-2] and df['STOCH_RSI'].iloc[-2] > 0.2:
-    buyOrder = client.place_order(
-        market=pairSymbol, 
-        side="sell", 
-        price=None, 
-        size=truncate(cryptoAmount, myTruncate), 
-        type='market')
-    print(buyOrder)
+elif df['EMA28'].iloc[-2] < df['EMA48'].iloc[-2] and df['STOCH_RSI'].iloc[-2] > 0.2:
+    if float(cryptoAmount) > minToken:
+        sellOrder = client.place_order(
+            market=pairSymbol, 
+            side="sell", 
+            price=None, 
+            size=truncate(cryptoAmount, myTruncate), 
+            type='market')
+        print("SELL", sellOrder)
+    else:
+        print("If you give me more",cryptoSymbol,"I will sell it")
 else :
   print("No opportunity to take")
