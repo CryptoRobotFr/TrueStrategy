@@ -37,10 +37,11 @@ def getBalance(myclient, coin):
     if jsonBalance == []: 
         return 0
     pandaBalance = pd.DataFrame(jsonBalance)
+    print(pandaBalance)
     if pandaBalance.loc[pandaBalance['coin'] == coin].empty: 
         return 0
     else: 
-        return float(pandaBalance.loc[pandaBalance['coin'] == coin]['free'])
+        return float(pandaBalance.loc[pandaBalance['coin'] == coin]['total'])
 
 def truncate(n, decimals=0):
     r = floor(float(n)*10**decimals)/10**decimals
