@@ -75,8 +75,8 @@ df['STOCH_RSI'] = ta.momentum.stochrsi(close=df['close'], window=15, smooth1=3, 
 print(df)
 
 actualPrice = df['close'].iloc[-1]
-fiatAmount = client.get_asset_balance(asset=fiatSymbol)['free']
-cryptoAmount = client.get_asset_balance(asset=cryptoSymbol)['free']
+fiatAmount = float(client.get_asset_balance(asset=fiatSymbol)['free'])
+cryptoAmount = float(client.get_asset_balance(asset=cryptoSymbol)['free'])
 minToken = 5/actualPrice
 print('coin price :',actualPrice, 'usd balance', fiatAmount, 'coin balance :',cryptoAmount)
 
